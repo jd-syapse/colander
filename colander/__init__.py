@@ -314,7 +314,7 @@ class Email(Regex):
         the error message to be used when raising :exc:`colander.Invalid`;
         otherwise, defaults to 'Invalid email address'.
     """
-    
+
     def __init__(self, msg=None):
         email_regex = text_(EMAIL_RE)
         if msg is None:
@@ -917,7 +917,7 @@ class Sequence(Positional, SchemaType):
 
     def _validate(self, node, value, accept_scalar):
         if (hasattr(value, '__iter__') and
-            not hasattr(value, 'get') and 
+            not hasattr(value, 'get') and
             not isinstance(value, string_types)):
             return list(value)
         if accept_scalar:
@@ -1146,8 +1146,10 @@ class String(SchemaType):
                             mapping={'val':appstruct, 'err':e})
                           )
     def deserialize(self, node, cstruct):
-        if not cstruct:
+        if cstruct is None:
             return null
+        elif cstruct == '':
+            return cstruct
 
         try:
             result = cstruct
@@ -1300,7 +1302,7 @@ class Boolean(SchemaType):
     are considered ``True``, and an Invalid exception would be raised
     for values outside of both :attr:`false_choices` and :attr:`true_choices`.
 
-    Serialization will produce :attr:`true_val` or :attr:`false_val` 
+    Serialization will produce :attr:`true_val` or :attr:`false_val`
     based on the value.
 
     If the :attr:`colander.null` value is passed to the serialize
@@ -1347,8 +1349,8 @@ class Boolean(SchemaType):
             else:
                 raise Invalid(node,
                               _('"${val}" is neither in (${false_choices}) '
-                                'nor in (${true_choices})', 
-                                mapping={'val':cstruct, 
+                                'nor in (${true_choices})',
+                                mapping={'val':cstruct,
                                          'false_choices': self.false_reprs,
                                          'true_choices': self.true_reprs })
                               )
@@ -2214,9 +2216,9 @@ class instantiate(object):
     All parameters passed to the decorator and passed along to the
     :class:`SchemaNode` during instantiation.
     """
-    
+
     def __init__(self,*args,**kw):
         self.args,self.kw = args,kw
-        
+
     def __call__(self,class_):
         return class_(*self.args,**self.kw)
